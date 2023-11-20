@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <math.h>
 
 #define MAX_LENGTH 10
 
@@ -18,7 +19,12 @@ int main() {
 }
 
 char* int2str(int num) {
+    char result[11];
+    int loop_limit = log10((double)num);
+    for (int i=0;i<loop_limit;i++) {
 
+    }
+    result[loop_limit] = '\0';
 }
 
 int str2str(char* str) {
