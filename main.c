@@ -3,21 +3,20 @@
 
 #define MAX_LENGTH 10
 
-char* encode(const char* string);
-char* decode(char* string);
-
-char result[MAX_LENGTH];
+char* encode(const char* string, char* result);
+char* decode(const char* string, char* result);
 
 int main() {
     char string[MAX_LENGTH];
+    char result[MAX_LENGTH];
     scanf("%s", string);
 
-    printf("%s", encode(string));
+    printf("%s", encode(string, result));
 
     return 0;
 }
 
-char* encode(const char* string) {
+char* encode(const char* string, char* result) {
     int  index = 1,
          result_index = 0,
          char_count   = 1;
@@ -49,6 +48,6 @@ char* encode(const char* string) {
     return result;
 }
 
-char* decode(char* string) {
+char* decode(const char* string, char* result) {
 
 }
