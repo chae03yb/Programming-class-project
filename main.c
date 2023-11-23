@@ -3,55 +3,52 @@
 
 #define MAX_LENGTH 10
 
-char* int2str(int num);
-int   str2int(char* str);
-void  encode(char* string);
-char* decode();
+char* encode(const char* string);
+char* decode(char* string);
 
+char result[MAX_LENGTH];
 
 int main() {
     char string[MAX_LENGTH];
     scanf("%s", string);
 
-    encode(string);
+    printf("%s", encode(string));
 
     return 0;
 }
 
-char* int2str(int num) {
-    char result[11];
-    int loop_limit = log10((double)num);
-    for (int i=0;i<loop_limit;i++) {
+char* encode(const char* string) {
+    int  index = 1,
+         result_index = 0,
+         char_count   = 1;
+    char selected_char = string[0];
 
-    }
-    result[loop_limit] = '\0';
-}
-
-int str2str(char* str) {
-
-}
-
-void encode(char* string) {
-    char result[MAX_LENGTH];
-    int index = 0,
-        result_index = 0,
-        prev_char    = 0,
-        char_count   = 0;
-
-    while (string[index] != '\0') {
-        if (prev_char == string[index]) {
-            char_count++;
+    while (string[index] != '\0') {  // 문자열 끝까지 반복
+        if (selected_char == string[index]) {  // 선택된 문자와 현재 문자가 같다면
+            char_count++;  // 문자열 개수 카운트
         }
-        else {
-            char num[] = int2str(char_count);
+        else {  // 다르다면
+            char buff[4];  // 버퍼 선언
+            int form_len = char_count > 1 ?
+                sprintf(buff, "%c%d", selected_char, char_count) :  // 문자열 버퍼에 %c%d 형식으로 쓰기
+                sprintf(buff, "%c", selected_char);  // 반복되지 않는다면 그대로 씀
+            
+            selected_char = string[index];  // 선택된 문자 변경
+            char_count = 1;
 
-            result[result_index++] = prev_char;
-            result[result_index++];
+            for (int i=0;i<form_len;i++) {
+                result[result_index++] = buff[i];  // 결과 문자열에 쓰기
+            }
         }
-        index++;
+        index++;  // 다음 문자열로 넘어감
     }
+
+    result[result_index++] = selected_char;
+    result[result_index] = '\0';
+
+    return result;
 }
 
-char* decode() {
+char* decode(char* string) {
 
 }
