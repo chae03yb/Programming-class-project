@@ -1,8 +1,7 @@
 #include <stdio.h>
-#include <stdlib.h>
 
 #define MAX_LENGTH 10
-#define ESCAPE '`';
+
 
 void handle_encode();
 void handle_decode();
@@ -11,35 +10,23 @@ void handle_except();
 char* encode(const char* string, char* result);
 char* decode(const char* string, char* result);
 
-int main() {
-    char string[MAX_LENGTH];
-    char e_result[MAX_LENGTH];
-    char d_result[MAX_LENGTH];
 
+int main() {
     int mode;
-    printf("¹İº¹ ±æÀÌ ¾ĞÃà ÇÁ·Î±×·¥ÀÔ´Ï´Ù\n");
-    printf("¾ĞÃàÀ» ¿øÇÏ½Å´Ù¸é 1, ¾ĞÃà ÇØÁ¦¸¦ ¿øÇÏ½Å´Ù¸é 2¸¦ ÀÔ·ÂÇØÁÖ¼¼¿ä\n");
+    printf("ë°˜ë³µ ê¸¸ì´ ì••ì¶• í”„ë¡œê·¸ë¨ì…ë‹ˆë‹¤\n");
+    printf("ì••ì¶•ì„ ì›í•˜ì‹ ë‹¤ë©´ 1, ì••ì¶• í•´ì œë¥¼ ì›í•˜ì‹ ë‹¤ë©´ 2ë¥¼ ì…ë ¥í•´ì£¼ì„¸ìš”\n");
     printf("(1 / 2) > "); scanf("%d", &mode);
 
     switch (mode) {
         case 1:
             handle_encode();
-//            FILE* file = fopen("", "");
-//            encode()
             break;
         case 2:
             handle_decode();
             break;
         default:
             handle_except();
-            printf("¿Ã¹Ù¸¥ ¼ıÀÚ¸¦ ÀÔ·ÂÇØÁÖ¼¼¿ä");
-            return 0;
     }
-
-    scanf("%s", string);
-
-    encode(string, e_result);
-    decode(e_result, d_result);
 
     return 0;
 }
@@ -50,24 +37,24 @@ char* encode(const char* string, char* result) {
          char_count   = 1;
     char selected_char = string[0];
 
-    while (string[index] != '\0') {  // ¹®ÀÚ¿­ ³¡±îÁö ¹İº¹
-        if (selected_char == string[index]) {  // ¼±ÅÃµÈ ¹®ÀÚ¿Í ÇöÀç ¹®ÀÚ°¡ °°´Ù¸é
-            char_count++;  // ¹®ÀÚ¿­ °³¼ö Ä«¿îÆ®
+    while (string[index] != '\0') {  // ë¬¸ìì—´ ëê¹Œì§€ ë°˜ë³µ
+        if (selected_char == string[index]) {  // ì„ íƒëœ ë¬¸ìì™€ í˜„ì¬ ë¬¸ìê°€ ê°™ë‹¤ë©´
+            char_count++;  // ë¬¸ìì—´ ê°œìˆ˜ ì¹´ìš´íŠ¸
         }
-        else {  // ´Ù¸£´Ù¸é
-            char buff[4];  // ¹öÆÛ ¼±¾ğ
+        else {  // ë‹¤ë¥´ë‹¤ë©´
+            char buff[4];  // ë²„í¼ ì„ ì–¸
             int form_len = char_count > 1 ?
-                sprintf(buff, "%c%d", selected_char, char_count) :  // ¹®ÀÚ¿­ ¹öÆÛ¿¡ %c%d Çü½ÄÀ¸·Î ¾²±â
-                sprintf(buff, "%c", selected_char);  // ¹İº¹µÇÁö ¾Ê´Â´Ù¸é ±×´ë·Î ¾¸
+                sprintf(buff, "%c%d", selected_char, char_count) :  // ë¬¸ìì—´ ë²„í¼ì— %c%d í˜•ì‹ìœ¼ë¡œ ì“°ê¸°
+                sprintf(buff, "%c", selected_char);  // ë°˜ë³µë˜ì§€ ì•ŠëŠ”ë‹¤ë©´ ê·¸ëŒ€ë¡œ ì”€
             
-            selected_char = string[index];  // ¼±ÅÃµÈ ¹®ÀÚ º¯°æ
+            selected_char = string[index];  // ì„ íƒëœ ë¬¸ì ë³€ê²½
             char_count = 1;
 
             for (int i=0;i<form_len;i++) {
-                result[result_index++] = buff[i];  // °á°ú ¹®ÀÚ¿­¿¡ ¾²±â
+                result[result_index++] = buff[i];  // ê²°ê³¼ ë¬¸ìì—´ì— ì“°ê¸°
             }
         }
-        index++;  // ´ÙÀ½ ¹®ÀÚ¿­·Î ³Ñ¾î°¨
+        index++;  // ë‹¤ìŒ ë¬¸ìì—´ë¡œ ë„˜ì–´ê°
     }
 
     result[result_index++] = selected_char;
@@ -84,12 +71,10 @@ char* decode(const char* string, char* result) {
          buff[4];
 
     while (string[index] != '\0') {
-        // a3bc
         selected_char = string[index];
 
         if ('0' <= string[index+1] && string[index+1] <= '9') {
             for (int i=0;i<2;i++) {
-                int _ = string[index+1+i];
                 if (string[index+1+i] < '0' || string[index+1+i] > '9') {
                     index += i+1;
                     break;
@@ -109,4 +94,60 @@ char* decode(const char* string, char* result) {
     result[result_index] = '\0';
 
     return result;
+}
+
+void handle_encode() {
+    char path_from[100],
+         path_to[100];
+    printf("ì½ì„ íŒŒì¼ì˜ ê²½ë¡œë¥¼ ì…ë ¥í•´ì£¼ì„¸ìš”\n"); scanf("%s", path_from);
+    printf("ê²°ê³¼ë¥¼ ì“¸ íŒŒì¼ì˜ ê²½ë¡œë¥¼ ì…ë ¥í•´ì£¼ì„¸ìš”\n"); scanf("%s", path_to);
+    FILE* from = fopen(path_from, "r+");
+    FILE* to   = fopen(path_to, "w");
+
+    if (from == NULL) {
+        printf("íŒŒì¼ì„ ì½ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤.");
+        return;
+    }
+    if (to   == NULL) {
+        printf("íŒŒì¼ì„ ì“¸ ìˆ˜ ì—†ìŠµë‹ˆë‹¤.");
+        return;
+    }
+
+    while (!feof(from)) {
+        char buff[MAX_LENGTH],
+             result[MAX_LENGTH];
+        fgets(buff, MAX_LENGTH, from);
+        encode(buff, result);
+        fputs(result, to);
+    }
+}
+
+void handle_decode() {
+    char path_from[100],
+         path_to[100];
+    printf("ì½ì„ íŒŒì¼ì˜ ê²½ë¡œë¥¼ ì…ë ¥í•´ì£¼ì„¸ìš”\n"); scanf("%s", path_from);
+    printf("ê²°ê³¼ë¥¼ ì“¸ íŒŒì¼ì˜ ê²½ë¡œë¥¼ ì…ë ¥í•´ì£¼ì„¸ìš”\n"); scanf("%s", path_to);
+    FILE* from = fopen(path_from, "r+");
+    FILE* to   = fopen(path_to, "w");
+
+    if (from == NULL) {
+        printf("íŒŒì¼ì„ ì½ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤.");
+        return;
+    }
+    if (to   == NULL) {
+        printf("íŒŒì¼ì„ ì“¸ ìˆ˜ ì—†ìŠµë‹ˆë‹¤.");
+        return;
+    }
+
+    while (!feof(from)) {
+        char buff[MAX_LENGTH],
+             result[MAX_LENGTH];
+        fgets(buff, MAX_LENGTH, from);
+        decode(buff, result);
+        fputs(result, to);
+    }
+}
+
+void handle_except() {
+    printf("ì˜¬ë°”ë¥¸ ìˆ«ìë¥¼ ì…ë ¥í•´ì£¼ì„¸ìš”");
 }
