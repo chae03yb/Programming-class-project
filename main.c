@@ -1,8 +1,12 @@
 #include <stdio.h>
-#include <math.h>
-#include <stdbool.h>
+#include <stdlib.h>
 
 #define MAX_LENGTH 10
+#define ESCAPE '`';
+
+void handle_encode();
+void handle_decode();
+void handle_except();
 
 char* encode(const char* string, char* result);
 char* decode(const char* string, char* result);
@@ -11,13 +15,31 @@ int main() {
     char string[MAX_LENGTH];
     char e_result[MAX_LENGTH];
     char d_result[MAX_LENGTH];
+
+    int mode;
+    printf("¹İº¹ ±æÀÌ ¾ĞÃà ÇÁ·Î±×·¥ÀÔ´Ï´Ù\n");
+    printf("¾ĞÃàÀ» ¿øÇÏ½Å´Ù¸é 1, ¾ĞÃà ÇØÁ¦¸¦ ¿øÇÏ½Å´Ù¸é 2¸¦ ÀÔ·ÂÇØÁÖ¼¼¿ä\n");
+    printf("(1 / 2) > "); scanf("%d", &mode);
+
+    switch (mode) {
+        case 1:
+            handle_encode();
+//            FILE* file = fopen("", "");
+//            encode()
+            break;
+        case 2:
+            handle_decode();
+            break;
+        default:
+            handle_except();
+            printf("¿Ã¹Ù¸¥ ¼ıÀÚ¸¦ ÀÔ·ÂÇØÁÖ¼¼¿ä");
+            return 0;
+    }
+
     scanf("%s", string);
 
     encode(string, e_result);
     decode(e_result, d_result);
-
-    printf("%s\n", e_result);
-    printf("%s\n", d_result);
 
     return 0;
 }
@@ -28,24 +50,24 @@ char* encode(const char* string, char* result) {
          char_count   = 1;
     char selected_char = string[0];
 
-    while (string[index] != '\0') {  // ë¬¸ìì—´ ëê¹Œì§€ ë°˜ë³µ
-        if (selected_char == string[index]) {  // ì„ íƒëœ ë¬¸ìì™€ í˜„ì¬ ë¬¸ìê°€ ê°™ë‹¤ë©´
-            char_count++;  // ë¬¸ìì—´ ê°œìˆ˜ ì¹´ìš´íŠ¸
+    while (string[index] != '\0') {  // ¹®ÀÚ¿­ ³¡±îÁö ¹İº¹
+        if (selected_char == string[index]) {  // ¼±ÅÃµÈ ¹®ÀÚ¿Í ÇöÀç ¹®ÀÚ°¡ °°´Ù¸é
+            char_count++;  // ¹®ÀÚ¿­ °³¼ö Ä«¿îÆ®
         }
-        else {  // ë‹¤ë¥´ë‹¤ë©´
-            char buff[4];  // ë²„í¼ ì„ ì–¸
+        else {  // ´Ù¸£´Ù¸é
+            char buff[4];  // ¹öÆÛ ¼±¾ğ
             int form_len = char_count > 1 ?
-                sprintf(buff, "%c%d", selected_char, char_count) :  // ë¬¸ìì—´ ë²„í¼ì— %c%d í˜•ì‹ìœ¼ë¡œ ì“°ê¸°
-                sprintf(buff, "%c", selected_char);  // ë°˜ë³µë˜ì§€ ì•ŠëŠ”ë‹¤ë©´ ê·¸ëŒ€ë¡œ ì”€
+                sprintf(buff, "%c%d", selected_char, char_count) :  // ¹®ÀÚ¿­ ¹öÆÛ¿¡ %c%d Çü½ÄÀ¸·Î ¾²±â
+                sprintf(buff, "%c", selected_char);  // ¹İº¹µÇÁö ¾Ê´Â´Ù¸é ±×´ë·Î ¾¸
             
-            selected_char = string[index];  // ì„ íƒëœ ë¬¸ì ë³€ê²½
+            selected_char = string[index];  // ¼±ÅÃµÈ ¹®ÀÚ º¯°æ
             char_count = 1;
 
             for (int i=0;i<form_len;i++) {
-                result[result_index++] = buff[i];  // ê²°ê³¼ ë¬¸ìì—´ì— ì“°ê¸°
+                result[result_index++] = buff[i];  // °á°ú ¹®ÀÚ¿­¿¡ ¾²±â
             }
         }
-        index++;  // ë‹¤ìŒ ë¬¸ìì—´ë¡œ ë„˜ì–´ê°
+        index++;  // ´ÙÀ½ ¹®ÀÚ¿­·Î ³Ñ¾î°¨
     }
 
     result[result_index++] = selected_char;
@@ -55,32 +77,34 @@ char* encode(const char* string, char* result) {
 }
 
 char* decode(const char* string, char* result) {
-    int index = 0,
-        result_index = 0;
-    char selected_char;
+    int  index = 0,
+         result_index = 0,
+         repeat_count;
+    char selected_char,
+         buff[4];
 
-    while (string[index] != '\0') {  // ë¬¸ìì—´ ë°˜ë³µ
-        bool is_repeated = '1' <= string[index+1] && string[index+1] <= '9';  // ë‹¤ìŒ ë¬¸ìê°€ ìˆ«ìë©´ ë°˜ë³µë¨
-        int repeat_count = 0;  // ë°˜ë³µ íšŸìˆ˜ ì €ì¥ìš©
-        selected_char = string[index];  // í˜„ì¬ ë¬¸ì
+    while (string[index] != '\0') {
+        // a3bc
+        selected_char = string[index];
 
-        result[result_index++] = selected_char;  // ì¸ë±ìŠ¤ ì¦ê°€í•˜ë©° ê²°ê³¼ ë¬¸ìì—´ì— í˜„ì¬ ë¬¸ì ì¶”ê°€
-
-        if (is_repeated) {  // ë°˜ë³µë˜ëŠ” ë¬¸ìì—´ì´ë¼ë©´
-            char buff[3];
-            for (int i=2;i>=0;i--) {  // ë°˜ë³µ íšŸìˆ˜ ì…ˆ
-                // FIXME: ì—°ì‚°ìœ¼ë¡œ ë°˜ë³µ íšŸìˆ˜ ì„¸ì–´ì•¼ í•¨
-                if ('0' <= string[index+i] && string[index+i] <= '9')
-                    buff[i] = string[index+i];
-                else
-                    continue;
+        if ('0' <= string[index+1] && string[index+1] <= '9') {
+            for (int i=0;i<2;i++) {
+                int _ = string[index+1+i];
+                if (string[index+1+i] < '0' || string[index+1+i] > '9') {
+                    index += i+1;
+                    break;
+                }
+                buff[i] = string[index+1+i];
             }
+            buff[index] = '\0';
             sscanf(buff, "%d", &repeat_count);
 
-            for (int i=0;i<repeat_count;i++)  // ë°˜ë³µ íšŸìˆ˜ë§Œí¼ ë¬¸ì ì¶”ê°€
+            for (int i=0;i<repeat_count;i++)
                 result[result_index++] = selected_char;
+
+        } else {
+            result[result_index++] = string[index++];
         }
-        index++;
     }
     result[result_index] = '\0';
 
