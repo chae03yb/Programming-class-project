@@ -1,6 +1,6 @@
-#include <stdio.h>
+﻿#include <stdio.h>
 
-#define MAX_LENGTH 10
+#define MAX_LENGTH 1000
 
 
 void handle_encode();
