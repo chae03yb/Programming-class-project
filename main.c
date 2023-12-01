@@ -34,19 +34,20 @@ int main() {
 char* encode(const char* string, char* result) {
     int  index = 1,
          result_index = 0,
-         char_count   = 1;
-    char selected_char = string[0];
+         char_count   = 1,
+         form_len;
+    char selected_char = string[0],
+         buff[4];  // 버퍼 선언
 
     while (string[index] != '\0') {  // 문자열 끝까지 반복
         if (selected_char == string[index]) {  // 선택된 문자와 현재 문자가 같다면
             char_count++;  // 문자열 개수 카운트
         }
         else {  // 다르다면
-            char buff[4];  // 버퍼 선언
-            int form_len = char_count > 1 ?
+            form_len = char_count > 1 ?
                 sprintf(buff, "%c%d", selected_char, char_count) :  // 문자열 버퍼에 %c%d 형식으로 쓰기
                 sprintf(buff, "%c", selected_char);  // 반복되지 않는다면 그대로 씀
-            
+
             selected_char = string[index];  // 선택된 문자 변경
             char_count = 1;
 
@@ -57,7 +58,13 @@ char* encode(const char* string, char* result) {
         index++;  // 다음 문자열로 넘어감
     }
 
-    result[result_index++] = selected_char;
+    form_len = char_count > 1 ?
+        sprintf(buff, "%c%d", selected_char, char_count) :  // 문자열 버퍼에 %c%d 형식으로 쓰기
+        sprintf(buff, "%c", selected_char);  // 반복되지 않는다면 그대로 씀
+
+    for (int i=0;i<form_len;i++)
+        result[result_index++] = buff[i];
+
     result[result_index] = '\0';
 
     return result;
